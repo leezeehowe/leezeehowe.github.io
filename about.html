@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "About"
-description: "know me for me"
+description: "know me via me"
 header-img: "img/about-bg.jpg"
 multilingual: true
 ---
@@ -10,13 +10,13 @@ multilingual: true
 
 <!-- Chinese Version -->
 <div class="zh post-container">
-    {% capture about_zh %}{% include about/zh-1.md %}{% endcapture %}
+    {% capture about_zh %}{% include about/zh.md %}{% endcapture %}
     {{ about_zh | markdownify }}
 </div>
 
 <!-- English Version -->
 <div class="en post-container">
-    {% capture about_en %}{% include about/en-1.md %}{% endcapture %}
+    {% capture about_en %}{% include about/en.md %}{% endcapture %}
     {{ about_en | markdownify }}
 </div>
 
