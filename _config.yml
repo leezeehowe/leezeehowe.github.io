@@ -78,7 +78,7 @@ ga_domain: leezeehowe.me
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
-sidebar-about-description: "know me via me<br>离开世界之前，一切都是过程"
+sidebar-about-description: "know me via me<br>相识 漫长 了解 靠近"
 sidebar-avatar: /img/my-logo.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
