@@ -2,7 +2,7 @@
 layout: post
 title: "JS的模块化历程"
 subtitle: 'CMD下的sea.js, ES6的标准'
-author: "Hux"
+author: "lee"
 header-style: text
 tags:
   - module
