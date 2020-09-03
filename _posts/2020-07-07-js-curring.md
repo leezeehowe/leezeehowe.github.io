@@ -8,7 +8,6 @@ tags:
   - Javascript
   - curring function
 ---
-
 # `Vue` && 函数柯里化
 
 函数柯里化是一种利用闭包特性实现使一个原本接受多个参数的函数变为一系列接受部分参数的函数并返回最终结果的技术。
@@ -18,7 +17,9 @@ tags:
 - 延迟执行
 - 参数缓存
 
-## 普通的柯里化
+## 一阶函数柯里化
+
+一阶函数柯里化是我取的，也不知道对不对。
 
 ```javascript
 /**
@@ -37,7 +38,7 @@ module.exports = {
 }
 ```
 
-使用柯里化包装原函数，第一次先接受部分的参数值，再返回一个接受剩余参数的函数。这里其实就是利用了闭包来保存第一次接受的部分的参数值，因为返回的匿名函数中访问了`basicCurrying`函数的执行上下文中的`rest`变量，所以在`basicCurrying`的执行上下文出栈后，它的变量对象不会被垃圾回收掉，且因为在返回的匿名函数的执行上下文的创建阶段，它的作用域链中会存有`basicCurrying`的变量对象，所以返回的匿名函数可以访问到`basicCurrying`执行上下问的变量。
+使用柯里化包装原函数，第一次先接受部分的参数值，再返回一个接受剩余参数的函数。这里其实就是利用了闭包来保存第一次接受的部分的参数值，因为返回的匿名函数中访问了`basicCurrying`函数的执行上下文中的`rest`变量，所以在`basicCurrying`的执行上下文出栈后，它的变量对象不会被垃圾回收掉，且因为在返回的匿名函数的执行上下文的创建阶段，它的作用域链中会存有`basicCurrying`的变量对象，所以返回的匿名函数可以访问到`basicCurrying`执行上下文的变量。
 
 ```javascript
 const {basicCurrying} = require('./lib/currying.basic')
@@ -54,9 +55,50 @@ console.log(curringInfiniteAdd(4, 5, 6))
 
 应用就像上面的例子一样，可以使得`infiniteAdd`这个函数延迟执行且缓存了部分参数。
 
-## 高阶柯里化
+> [Array.prototype.reduce](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce)
 
-普通的柯里化有个缺点就是延迟执行的次数是固定的两次，要是想延迟执行两次，就必须把柯里化返回的匿名函数再进行一次柯里化，要想延迟执行10次，就得10次柯里化...要实现任意次数得延迟执行，可以使用高阶柯里化实现。
+普通的柯里化有个缺点就是延迟执行的次数是固定的两次，要是想延迟执行两次，就必须把柯里化返回的匿名函数再进行一次柯里化，要想延迟执行10次，就得10次柯里化...
+
+比如，现在有一个打印日志的函数如下
+
+```javascript
+function logMethod(methodName, message, spendTime) {
+    console.log(`method: ${methodName}\t message: ${message}\t spendTime: ${spendTime}`)
+}
+
+function test(tag) {
+    // 现在知道函数名了，先使用一次函数柯里化缓存函数名
+    let logger = basicCurrying(logMethod, test.name)
+    const startTime = Date.now()
+    if (tag) {
+        // 现在知道自定义消息了，再使用一次函数柯里化缓存函数名
+        logger = basicCurrying(logger, 'tag is true')
+    }
+    else {
+        logger = basicCurrying(logger, 'tag is false')
+    }
+    let count = 0
+    do{
+        count++
+    }
+    while(count <= 2e6) 
+    // 最后，日志记录所需的三个参数都收集完成了，可以执行日志打印了
+    logger(Date.now() - startTime)
+}
+
+test(true)
+test(false)
+```
+
+可以看到，我们想延迟执行2次，就得手动进行2次函数柯里化嵌套，要实现任意次数得延迟执行，可以使用一种很骚很hack的操作，高阶函数柯里化。
+
+一阶函数柯里化其实就是通过创建一个函数作用域temp，通过temp的变量对象来储存实际要执行的函数target的部分形参，但是temp执行完毕出栈后，其变量对象tempVo会被gc回收，所以我们需要在temp内部定义一个函数temp2，temp2内部通过作用域链访问了tempVo，所以tempVo不会被回收，至此tempVo就成为了一个闭包，也即我们通过tempVo这个闭包缓存了target的形参，这就是一阶函数柯里化的核心原理。
+
+> 变量对象、作用域链
+
+## 高阶函数柯里化
+
+高阶函数柯里化其实也是一阶函数柯里化的嵌套，只不过不需要我们自己来嵌套，而是高级函数柯里化函数内部通过递归的方式实现，问题规模随着已缓存的形参数量增多而减小，递归出口就是已缓存的形参数量等于实际要执行的函数的函数签名的形参数量。
 
 ```javascript
 const {basicCurrying} = require('./currying.basic')
@@ -156,4 +198,5 @@ function createFn(htmlTagsStr) {
 const isHtmlTagPro = createFn(strs)
 isHtmlTagPro('div') // console true
 ```
+
 
