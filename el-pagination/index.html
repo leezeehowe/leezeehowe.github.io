@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <section>
+    <article></article>
+  </section>
+  <br>
+  <section>
+    <div id="pagination" is="el-pagination" mode="spa" position="right" total="10" max-show="6"></div>
+  </section>
+</body>
+<script src="./lib/bundle.js"></script>
+<script>
+
+  document.querySelector('#pagination').addEventListener('pagechange', (ev) => {
+    fetch(`http://yapi.luckly-mjw.cn/mock/50/test/users?pageIndex=${ev.currentPage}`).then(res => {
+      return res.json();
+    }).then(json => {
+      document.querySelector('article').innerText = JSON.stringify(json.data.list, 4);
+    })
+  })
+
+  setTimeout(() => {
+    document.querySelector('#pagination').reactiveAdjustPosition('center')
+  }, 3000)
+
+  setTimeout(() => {
+    document.querySelector('#pagination').reactiveSetCurrent(1);
+  }, 4000)
+</script>
+
+</html>
