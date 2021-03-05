@@ -9,21 +9,26 @@
 
 <body>
   <section>
-    <article></article>
+    <article style="text-align: center;"></article>
   </section>
   <br>
   <section>
-    <div id="pagination" is="el-pagination" mode="spa" position="right" total="10" max-show="6"></div>
+    <div id="pagination" is="el-pagination" mode="spa" position="left" total="10" max-show="6"></div>
   </section>
 </body>
 <script src="./lib/bundle.js"></script>
 <script>
 
   document.querySelector('#pagination').addEventListener('pagechange', (ev) => {
-    fetch(`http://yapi.luckly-mjw.cn/mock/50/test/users?pageIndex=${ev.currentPage}`).then(res => {
+    const articleDom = document.querySelector('article');
+    const url = `https://yapi.luckly-mjw.cn/mock/50/test/users?pageIndex=${ev.currentPage}`;
+    articleDom.innerText = `fetching data of page ${ev.currentPage}`;
+    fetch(url).then(res => {
       return res.json();
     }).then(json => {
-      document.querySelector('article').innerText = JSON.stringify(json.data.list, 4);
+      articleDom.innerText = JSON.stringify(json.data.list, 4);
+    }).catch(err => {
+      articleDom.innerText = `请求${url}失败`;
     })
   })
 
